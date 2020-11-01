@@ -2,6 +2,7 @@ import java.util.*;
 
 public class Knn {
     int k;
+    int crossValidation;
     List<Record> dataSet;
     List<Record> trainingSet;
     List<Record> testSet;
@@ -10,11 +11,12 @@ public class Knn {
 
     public void run(){
         accuracyList = new ArrayList<>();
+        crossValidation = 5;
 
         read();
         inputK();
 
-        for (int i=0; i<5; i++) {
+        for (int i=0; i<crossValidation; i++) {
             shuffleDataSet();
             divideDataSet();
             classification();
@@ -113,7 +115,7 @@ public class Knn {
             totalAcc += acc;
         }
 
-        totalAcc = totalAcc/5;
+        totalAcc = totalAcc/crossValidation;
 
         System.out.println("Accuracy is " + totalAcc + " %");
     }
