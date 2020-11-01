@@ -6,14 +6,22 @@ public class Knn {
     List<Record> trainingSet;
     List<Record> testSet;
     List<String> testSetResult;
+    List<Double> accuracyList;
 
     public void run(){
+        accuracyList = new ArrayList<>();
+
         read();
         inputK();
-        shuffleDataSet();
-        divideDataSet();
-        classification();
-        accuracyCheck();
+
+        for (int i=0; i<5; i++) {
+            shuffleDataSet();
+            divideDataSet();
+            classification();
+            accuracyCheck();
+        }
+
+        accuracyMean();
     }
 
     private void read() {
@@ -36,7 +44,7 @@ public class Knn {
         testSet = new ArrayList<>();
 
         int datasetSize = dataSet.size();
-        int trainingSetSize = (datasetSize*8)/10;
+        int trainingSetSize = (datasetSize*9)/10;
 
         for (int i=0; i<datasetSize; i++) {
             if ( i< trainingSetSize ) {
@@ -51,12 +59,12 @@ public class Knn {
 
         for (int i=0; i<testSet.size(); i++) {
             int datasetSize = dataSet.size();
-            int trainingSetSize = (datasetSize*8)/10;
+            int trainingSetSize = (datasetSize*9)/10;
 
             double[] distanceArray = new double[trainingSetSize];
             String[] nameArray = new String[trainingSetSize];
 
-            System.out.println("------ " + testSet.get(i).name + " ------");
+            //System.out.println("------ " + testSet.get(i).name + " ------");
 
             for (int j=0; j<trainingSet.size(); j++) {
                 distanceArray[j] = Distance.measure(testSet.get(i), trainingSet.get(j));
@@ -89,9 +97,24 @@ public class Knn {
             }
             else failure++;
 
-            System.out.println(i + ". " + testSet.get(i).name + " - " + testSetResult.get(i));
+            // System.out.println(i + ". " + testSet.get(i).name + " - " + testSetResult.get(i));
         }
 
-        System.out.println("Success Rate: " + success*100.0/(success + failure));
+        double accuracy = success*100.0/(success+failure);
+
+        accuracyList.add(accuracy);
+        //System.out.println("Success Rate: " + accuracy);
+    }
+
+    private void accuracyMean() {
+        double totalAcc = 0;
+
+        for (Double acc: accuracyList) {
+            totalAcc += acc;
+        }
+
+        totalAcc = totalAcc/5;
+
+        System.out.println("Accuracy is " + totalAcc + " %");
     }
 }

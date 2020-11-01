@@ -24,9 +24,9 @@ public class Sort {
 
     public String nearestNeighbour(int k) {
 
-        for (int i=0; i< k; i++) {
-            System.out.println(nameArray[i] + ": " + distanceArray[i]);
-        }
+//        for (int i=0; i< k; i++) {
+//            System.out.println(nameArray[i] + ": " + distanceArray[i]);
+//        }
 
         int setosa=0;
         int virginica=0;
@@ -38,7 +38,7 @@ public class Sort {
             if (nameArray[i].equals("Iris-virginica")) virginica++;
         }
 
-        System.out.println("Setosa=" + setosa + ", Versicolor=" + versicolor + ", Virginica=" + virginica);
+        //System.out.println("Setosa=" + setosa + ", Versicolor=" + versicolor + ", Virginica=" + virginica);
 
         if (setosa > virginica && setosa > versicolor) return "Iris-setosa";
         else if (virginica > setosa && virginica > versicolor) return "Iris-virginica";

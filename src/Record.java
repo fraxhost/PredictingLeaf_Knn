@@ -19,8 +19,8 @@ public class Record {
 
         this.values = new ArrayList<>();
         this.values.add(values.get(0));
-        this.values.add(values.get(0));
-        this.values.add(values.get(0));
-        this.values.add(values.get(0));
+        this.values.add(values.get(1));
+        this.values.add(values.get(2));
+        this.values.add(values.get(3));
     }
 }
