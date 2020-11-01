@@ -18,9 +18,9 @@ public class Record {
 //        Integer i3 = (int) Math.round(values.get(3)*100);
 
         this.values = new ArrayList<>();
-        this.values.add(values.get(0)*100.0);
-        this.values.add(values.get(0)*100.0);
-        this.values.add(values.get(0)*100.0);
-        this.values.add(values.get(0)*100.0);
+        this.values.add(values.get(0));
+        this.values.add(values.get(0));
+        this.values.add(values.get(0));
+        this.values.add(values.get(0));
     }
 }

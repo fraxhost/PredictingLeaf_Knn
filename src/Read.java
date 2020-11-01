@@ -9,7 +9,8 @@ public class Read {
     List<Record> storedData;
 
     public List<Record> readFile(){
-        File file = new File("C:\\Users\\Hp\\Desktop\\Programming\\Java\\Data Mining\\KNN (Predicting Leaf)\\data.txt");
+        File file = new File(
+                "C:\\Users\\Hp\\Desktop\\Programming\\Java\\Data Mining\\K-NN (Predicting Leaf)\\data.txt");
         storedData = new ArrayList<>();
 
         try {
