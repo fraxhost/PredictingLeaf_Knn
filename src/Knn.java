@@ -9,16 +9,16 @@ public class Knn {
     List<String> testSetResult;
     List<Double> accuracyList;
 
-    public void run(){
+    public void run() {
         accuracyList = new ArrayList<>();
-        crossValidation = 5;
+        crossValidation = 10;
 
         read();
         inputK();
+        shuffleDataSet();
 
         for (int i=0; i<crossValidation; i++) {
-            shuffleDataSet();
-            divideDataSet();
+            divideDataSet(i);
             classification();
             accuracyCheck();
         }
@@ -38,21 +38,24 @@ public class Knn {
     }
 
     private void shuffleDataSet() {
+        // Shuffle
         Collections.shuffle(dataSet);
     }
 
-    private void divideDataSet() {
+    private void divideDataSet(int set) {
         trainingSet = new ArrayList<>();
         testSet = new ArrayList<>();
 
         int datasetSize = dataSet.size();
-        int trainingSetSize = (datasetSize*9)/10;
+        int eachSet = datasetSize/crossValidation;
 
+        //System.out.println("Test Set: " + set);
         for (int i=0; i<datasetSize; i++) {
-            if ( i< trainingSetSize ) {
-                trainingSet.add(dataSet.get(i));
+            if ( i >= set*eachSet && i < (set+1)*eachSet ) {
+                testSet.add(dataSet.get(i));
+                //System.out.println(i);
             }
-            else testSet.add(dataSet.get(i));
+            else trainingSet.add(dataSet.get(i));
         }
     }
 
@@ -109,14 +112,16 @@ public class Knn {
     }
 
     private void accuracyMean() {
-        double totalAcc = 0;
+        Double accuracyMean = 0.0;
 
         for (Double acc: accuracyList) {
-            totalAcc += acc;
+            accuracyMean += acc;
         }
 
-        totalAcc = totalAcc/crossValidation;
+        accuracyMean = accuracyMean/crossValidation;
 
-        System.out.println("Accuracy is " + totalAcc + " %");
+        String formattedAccuracyMean = String.format("%.2f", accuracyMean);
+
+        System.out.println("Accuracy is " + formattedAccuracyMean + " %");
     }
 }
