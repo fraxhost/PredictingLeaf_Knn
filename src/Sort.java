@@ -19,14 +19,15 @@ public class Sort {
 
         distanceArray = array1.clone();
         nameArray = array2.clone();
-
     }
 
     public String nearestNeighbour(int k) {
 
-//        for (int i=0; i< k; i++) {
-//            System.out.println(nameArray[i] + ": " + distanceArray[i]);
-//        }
+        for (int i=0; i< k; i++) {
+            //System.out.println((i+1) + "- " + nameArray[i] + ": " + distanceArray[i]);
+        }
+
+        //System.out.println("\n---");
 
         int setosa=0;
         int virginica=0;

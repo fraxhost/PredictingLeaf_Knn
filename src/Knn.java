@@ -3,14 +3,25 @@ import java.util.*;
 public class Knn {
     int k;
     int crossValidation;
+
+    //Dataset Variables
     List<Record> dataSet;
     List<Record> trainingSet;
     List<Record> testSet;
     List<String> testSetResult;
-    List<Double> accuracyList;
+
+    //Performance Variables
+    List<Double> aList;
+    List<Double> fList;
+    List<Double> pList;
+    List<Double> rList;
 
     public void run() {
-        accuracyList = new ArrayList<>();
+        aList = new ArrayList<>();
+        fList = new ArrayList<>();
+        rList = new ArrayList<>();
+        pList = new ArrayList<>();
+
         crossValidation = 10;
 
         read();
@@ -20,10 +31,10 @@ public class Knn {
         for (int i=0; i<crossValidation; i++) {
             divideDataSet(i);
             classification();
-            accuracyCheck();
+            performanceMeasure();
         }
 
-        accuracyMean();
+        performanceMean();
     }
 
     private void read() {
@@ -92,7 +103,8 @@ public class Knn {
         }
     }
 
-    private void accuracyCheck() {
+    private void performanceMeasure() {
+        int[][] confusionMatrix = new int[3][3];
         int success = 0;
         int failure = 0;
 
@@ -102,26 +114,96 @@ public class Knn {
             }
             else failure++;
 
-            // System.out.println(i + ". " + testSet.get(i).name + " - " + testSetResult.get(i));
+            //Constructing Confusion Matrix
+            int a, b;
+            if(testSet.get(i).name.equals("Iris-setosa")) a=0;
+            else if(testSet.get(i).name.equals("Iris-virginica")) a=1;
+            else a=2; //(testSet.get(i).name.equals("Iris-versicolor"))
+
+            if(testSetResult.get(i).equals("Iris-setosa")) b=0;
+            else if(testSetResult.get(i).equals("Iris-virginica")) b=1;
+            else b=2; //(testSet.get(i).name.equals("Iris-versicolor"))
+
+            confusionMatrix[a][b]++;
         }
 
-        double accuracy = success*100.0/(success+failure);
+        //Print Confusion Matrix
+        for (int i=0; i<3; i++) {
+            for (int j=0; j<3; j++) {
+                System.out.print(confusionMatrix[i][j] + " ");
+            }
+            System.out.println();
+        }
 
-        accuracyList.add(accuracy);
-        //System.out.println("Success Rate: " + accuracy);
+        // Properties
+        double TPset=0, FPset=0, FNset=0, TNset=0, Pset=0, Rset=0, Fset=0;
+        double TPvirgin=0, FPvirgin=0, FNvirgin=0, TNvirgin=0, Pvirgin=0, Rvirgin=0, Fvirgin=0;
+        double TPversi=0, FPversi=0, FNversi=0, TNversi=0, Pversi=0, Rversi=0, Fversi=0;
+
+        TPset = confusionMatrix[0][0];
+        FPset = confusionMatrix[1][0] + confusionMatrix[2][0];
+        FNset = confusionMatrix[0][1] + confusionMatrix[0][2];
+        TNset = confusionMatrix[1][1] + confusionMatrix[1][2] + confusionMatrix[2][1] + confusionMatrix[2][2];
+        Pset = TPset * 1.0 / (TPset + FPset);
+        Rset = TPset * 1.0 / (TPset + FNset);
+        Fset = 2.0 * Pset * Rset / (Pset + Rset);
+
+        TPvirgin = confusionMatrix[1][1];
+        FPvirgin = confusionMatrix[0][1] + confusionMatrix[2][1];
+        FNvirgin = confusionMatrix[1][0] + confusionMatrix[1][2];
+        TNvirgin = confusionMatrix[0][0] + confusionMatrix[0][2] + confusionMatrix[2][0] + confusionMatrix[2][2];
+        Pvirgin = TPvirgin * 1.0 / (TPvirgin + FPvirgin);
+        Rvirgin = TPvirgin * 1.0 / (TPvirgin + FNvirgin);
+        Fvirgin = 2.0 * Pvirgin * Rvirgin / (Pvirgin + Rvirgin);
+
+        TPversi = confusionMatrix[2][2];
+        FPversi = confusionMatrix[0][2] + confusionMatrix[1][2];
+        FNversi = confusionMatrix[2][0] + confusionMatrix[2][1];
+        TNversi = confusionMatrix[0][0] + confusionMatrix[0][1] + confusionMatrix[1][0] + confusionMatrix[1][1];
+        Pversi = TPversi * 1.0  / (TPversi + FPversi);
+        Rversi = TPversi * 1.0 / (TPversi + FNversi);
+        Fversi = 2.0 * Pversi * Rversi / (Pversi + Rversi);
+
+        double Paverage=0, Raverage=0, Faverage=0, Aaverage=0;
+        Paverage = ( Pset + Pvirgin + Pversi ) / 3.0 / 0.01;
+        Raverage = ( Rset + Rvirgin + Rversi ) / 3.0 / 0.01;
+        Faverage = ( Fset + Fvirgin + Fversi ) / 3.0 / 0.01;
+        Aaverage = (TPset + TPversi + TPvirgin) / testSetResult.size() / 0.01;
+
+        System.out.print("Precision: " + String.format("%.2f" ,Paverage));
+        System.out.print(", Recall: " + String.format("%.2f" ,Raverage));
+        System.out.print(", F-Score: " + String.format("%.2f" ,Faverage));
+        System.out.println(", Accuracy: " + String.format("%.2f" ,Aaverage));
+
+        // adding performance of each iteration to list
+        aList.add(Aaverage);
+        fList.add(Faverage);
+        rList.add(Raverage);
+        pList.add(Paverage);
     }
 
-    private void accuracyMean() {
-        Double accuracyMean = 0.0;
+    private void performanceMean() {
+        Double aMean = 0.0;
+        Double fMean = 0.0;
+        Double rMean = 0.0;
+        Double pMean = 0.0;
 
-        for (Double acc: accuracyList) {
-            accuracyMean += acc;
+        for (int i=0; i<aList.size(); i++) {
+            aMean += aList.get(i);
+            pMean += pList.get(i);
+            fMean += fList.get(i);
+            rMean += rList.get(i);
         }
 
-        accuracyMean = accuracyMean/crossValidation;
+        aMean = aMean/crossValidation;
+        fMean = fMean/crossValidation;
+        rMean = rMean/crossValidation;
+        pMean = pMean/crossValidation;
 
-        String formattedAccuracyMean = String.format("%.2f", accuracyMean);
-
-        System.out.println("Accuracy is " + formattedAccuracyMean + " %");
+        System.out.println("\n------------------\nFinal Performance: \n------------------");
+        System.out.println("Accuracy is " + String.format("%.2f", aMean) + " %");
+        System.out.println("Precision is " + String.format("%.2f", pMean) + " %");
+        System.out.println("F-Score is " + String.format("%.2f", fMean) + " %");
+        System.out.println("Recall is " + String.format("%.2f", rMean) + " %");
     }
 }
