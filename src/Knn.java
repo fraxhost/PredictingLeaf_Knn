@@ -22,10 +22,8 @@ public class Knn {
         rList = new ArrayList<>();
         pList = new ArrayList<>();
 
-        crossValidation = 10;
-
         read();
-        inputK();
+        input();
         shuffleDataSet();
 
         for (int i=0; i<crossValidation; i++) {
@@ -42,10 +40,22 @@ public class Knn {
         dataSet = r.readFile();
     }
 
-    private void inputK() {
+    private void input() {
+        System.out.print("Enter value of fold: ");
+        Scanner myInput1 = new Scanner(System.in);
+        crossValidation = myInput1.nextInt();
+
+        if (crossValidation == 5 || crossValidation == 10 || crossValidation == 15) {
+            System.out.println("Valid Fold");
+        }
+        else {
+            System.out.println("Invalid Fold");
+            System.exit(0);
+        }
+
         System.out.print("Enter value of k: ");
-        Scanner myInput = new Scanner(System.in);
-        k = myInput.nextInt();
+        Scanner myInput2 = new Scanner(System.in);
+        k = myInput2.nextInt();
     }
 
     private void shuffleDataSet() {
@@ -75,7 +85,7 @@ public class Knn {
 
         for (int i=0; i<testSet.size(); i++) {
             int datasetSize = dataSet.size();
-            int trainingSetSize = (datasetSize*9)/10;
+            int trainingSetSize = (datasetSize*(crossValidation-1))/crossValidation;
 
             double[] distanceArray = new double[trainingSetSize];
             String[] nameArray = new String[trainingSetSize];
@@ -90,16 +100,6 @@ public class Knn {
             Sort mySort = new Sort();
             mySort.insertionSort(distanceArray, nameArray);
             testSetResult.add(mySort.nearestNeighbour(k));
-        }
-    }
-
-    private void printDataSet() {
-        for (Record record: dataSet) {
-            System.out.print(record.values.get(0) + " - ");
-            System.out.print(record.values.get(1) + " - ");
-            System.out.print(record.values.get(2) + " - ");
-            System.out.print(record.values.get(3) + " - ");
-            System.out.println(record.name);
         }
     }
 
@@ -205,5 +205,15 @@ public class Knn {
         System.out.println("Precision is " + String.format("%.2f", pMean) + " %");
         System.out.println("F-Score is " + String.format("%.2f", fMean) + " %");
         System.out.println("Recall is " + String.format("%.2f", rMean) + " %");
+    }
+
+    private void printDataSet() {
+        for (Record record: dataSet) {
+            System.out.print(record.values.get(0) + " - ");
+            System.out.print(record.values.get(1) + " - ");
+            System.out.print(record.values.get(2) + " - ");
+            System.out.print(record.values.get(3) + " - ");
+            System.out.println(record.name);
+        }
     }
 }
